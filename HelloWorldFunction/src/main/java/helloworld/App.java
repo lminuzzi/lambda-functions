@@ -2,14 +2,16 @@ package helloworld;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.google.gson.Gson;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Handler for requests to Lambda function.
@@ -18,6 +20,10 @@ public class App implements RequestHandler<String, Object> {
 
     public Object handleRequest(final String input, final Context context) {
         context.getLogger().log("Input = " + input);
+        return getProductById(102).toString();
+    }
+
+    private Product getProductById(int prodId) {
         Region region = Region.EU_WEST_3;
         S3Client s3Client = S3Client.builder().region(region).build();
 
@@ -30,14 +36,9 @@ public class App implements RequestHandler<String, Object> {
         InputStreamReader inputStreamReader = new InputStreamReader(responseInputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-        String outputStream = null;
+        Gson gson = new Gson();
+        Product[] products = gson.fromJson(bufferedReader, Product[].class);
 
-        try {
-            outputStream = bufferedReader.readLine();
-            bufferedReader.close();
-        } catch (IOException e) {
-            context.getLogger().log("An exception was generated when attempting to readLine() BufferedReader");
-        }
-        return outputStream;
+        return Arrays.stream(products).filter(prod -> prod.id == prodId).collect(Collectors.toList()).get(0);
     }
 }
