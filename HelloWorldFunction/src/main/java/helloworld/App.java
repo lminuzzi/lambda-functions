@@ -11,16 +11,20 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 /**
  * Handler for requests to Lambda function.
  */
-public class App implements RequestHandler<String, Object> {
+public class App implements RequestHandler<HttpQuerystringRequest, Object> {
 
-    public Object handleRequest(final String input, final Context context) {
-        context.getLogger().log("Input = " + input);
-        return getProductById(102).toString();
+    public Object handleRequest(final HttpQuerystringRequest request, final Context context) {
+        context.getLogger().log("requestValue: " + request);
+        String id = request.queryStringParameters.get("id");
+        if (id != null) {
+            int productId = Integer.parseInt(id);
+            return getProductById(productId).toString();
+        }
+        return null;
     }
 
     private Product getProductById(int prodId) {
@@ -39,6 +43,6 @@ public class App implements RequestHandler<String, Object> {
         Gson gson = new Gson();
         Product[] products = gson.fromJson(bufferedReader, Product[].class);
 
-        return Arrays.stream(products).filter(prod -> prod.id == prodId).collect(Collectors.toList()).get(0);
+        return Arrays.stream(products).filter(prod -> prod.id == prodId).findFirst().orElse(null);
     }
 }
