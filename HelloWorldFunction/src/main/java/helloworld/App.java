@@ -15,14 +15,14 @@ import java.util.Arrays;
 /**
  * Handler for requests to Lambda function.
  */
-public class App implements RequestHandler<HttpQuerystringRequest, Object> {
+public class App implements RequestHandler<HttpQuerystringRequest, HttpProductResponse> {
 
-    public Object handleRequest(final HttpQuerystringRequest request, final Context context) {
+    public HttpProductResponse handleRequest(final HttpQuerystringRequest request, final Context context) {
         context.getLogger().log("requestValue: " + request);
         String id = request.queryStringParameters.get("id");
         if (id != null) {
             int productId = Integer.parseInt(id);
-            return getProductById(productId).toString();
+            return new HttpProductResponse(getProductById(productId));
         }
         return null;
     }
