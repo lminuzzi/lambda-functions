@@ -1,5 +1,7 @@
 package helloworld;
 
+import com.google.gson.Gson;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +17,8 @@ public class HttpProductResponse {
 
     public HttpProductResponse(Product product) {
         this();
-        this.body = product.toString();
+        Gson gson = new Gson();
+        this.body = gson.toJson(product);
     }
 
     public String getBody() {
