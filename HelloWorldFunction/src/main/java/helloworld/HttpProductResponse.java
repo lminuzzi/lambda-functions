@@ -21,6 +21,12 @@ public class HttpProductResponse {
         this.body = gson.toJson(product);
     }
 
+    public HttpProductResponse(Product[] product) {
+        this();
+        Gson gson = new Gson();
+        this.body = gson.toJson(product);
+    }
+
     public String getBody() {
         return body;
     }
