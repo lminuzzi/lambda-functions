@@ -5,6 +5,7 @@ import java.util.List;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.google.gson.Gson;
+import software.amazon.awssdk.http.HttpStatusCode;
 
 public class InventoryInsertFunction extends InventoryS3Client
         implements RequestHandler<HttpRequest, HttpProductResponse> {
@@ -23,7 +24,7 @@ public class InventoryInsertFunction extends InventoryS3Client
         if (updateAllProducts(productsList)) {
             return response;
         }
-        response.setStatusCode("500");
+        response.setStatusCode(String.valueOf(HttpStatusCode.INTERNAL_SERVER_ERROR));
         return response;
     }
 }
